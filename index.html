@@ -3,220 +3,185 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>For My Queen Sneha 👑</title>
+<title>7 Days. 1 Heart ❤️</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-body{
-margin:0;
-font-family:'Poppins',sans-serif;
-background:linear-gradient(135deg,#ffd6e0,#ffe8d6);
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-overflow:hidden;
-transition:opacity 0.8s ease;
+body {
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(135deg,#ffd6e0,#ffe8d6);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow:hidden;
 }
 
-.screen{
-position:absolute;
-text-align:center;
-width:90%;
-max-width:550px;
-background:rgba(255,255,255,0.25);
-backdrop-filter:blur(25px);
-padding:40px;
-border-radius:25px;
-box-shadow:0 20px 60px rgba(0,0,0,0.15);
-opacity:0;
-transform:translateY(20px);
-transition:all 0.8s ease;
+.card {
+  background:rgba(255,255,255,0.25);
+  backdrop-filter:blur(25px);
+  border-radius:25px;
+  padding:40px;
+  width:90%;
+  max-width:520px;
+  text-align:center;
+  box-shadow:0 15px 50px rgba(0,0,0,0.15);
+  animation:fadeIn 1.2s ease forwards;
+  position:relative;
 }
 
-.active{
-opacity:1;
-transform:translateY(0);
+h1 {margin-bottom:15px;font-weight:600;}
+p {font-weight:300;line-height:1.6;}
+
+button {
+  margin-top:20px;
+  padding:12px 28px;
+  border:none;
+  border-radius:30px;
+  background:#ff6b81;
+  color:white;
+  font-size:15px;
+  cursor:pointer;
+  transition:0.3s;
 }
 
-button{
-margin-top:20px;
-padding:12px 30px;
-border:none;
-border-radius:30px;
-background:#ff6b81;
-color:white;
-font-size:15px;
-cursor:pointer;
-transition:0.3s;
-position:relative;
+button:hover {
+  transform:scale(1.07);
+  box-shadow:0 0 25px rgba(255,107,129,0.7);
 }
 
-button:hover{
-transform:scale(1.07);
-box-shadow:0 0 25px rgba(255,107,129,0.7);
+.hidden {display:none;}
+
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(20px);}
+  to {opacity:1; transform:translateY(0);}
 }
 
-input{
-padding:10px;
-border-radius:20px;
-border:none;
-margin-top:15px;
-text-align:center;
-font-size:16px;
+/* floating hearts */
+.heart {
+  position:absolute;
+  bottom:-20px;
+  font-size:20px;
+  animation:floatUp 8s linear infinite;
+  opacity:0.6;
 }
 
-img{
-width:100%;
-border-radius:20px;
-margin-top:20px;
-animation:fadeIn 1.5s ease;
+@keyframes floatUp {
+  0% {transform:translateY(0) scale(1); opacity:0.6;}
+  100% {transform:translateY(-110vh) scale(1.5); opacity:0;}
 }
 
-@keyframes fadeIn{
-from{opacity:0}
-to{opacity:1}
-}
-
-.heart{
-position:absolute;
-bottom:-20px;
-font-size:18px;
-animation:floatUp 8s linear infinite;
-opacity:0.5;
-}
-
-@keyframes floatUp{
-0%{transform:translateY(0)}
-100%{transform:translateY(-110vh)}
-}
-
-.confetti{
-position:absolute;
-font-size:18px;
-animation:fall 3s linear forwards;
-}
-
-@keyframes fall{
-0%{transform:translateY(-20px)}
-100%{transform:translateY(100vh)}
+/* music toggle */
+.music-toggle {
+  position:absolute;
+  top:15px;
+  right:20px;
+  cursor:pointer;
+  font-size:18px;
 }
 </style>
 </head>
 
 <body>
 
-<audio id="music" loop>
-<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5f0c3b8a6b.mp3?filename=romantic-ambient-110842.mp3">
+<div class="card">
+  <div class="music-toggle" onclick="toggleMusic()">🎵</div>
+  <h1 id="title"></h1>
+  <p id="message"></p>
+  <button id="actionBtn" onclick="reveal()">Tap Here 😌</button>
+  <p id="hiddenMessage" class="hidden"></p>
+</div>
+
+<audio id="bgMusic" loop>
+  <source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<div id="intro" class="screen active">
-<h2>For My Queen Sneha 👑</h2>
-<p>7 Days. One Heart.</p>
-<button onclick="startExperience()">Tap to Begin</button>
-</div>
-
-<div id="passwordScreen" class="screen">
-<h3>Enter Our Anniversary Date</h3>
-<p>Hint: 7th Feb (DDMM)</p>
-<input id="password" placeholder="0702">
-<br>
-<button onclick="checkPassword()">Unlock ❤️</button>
-</div>
-
-<div id="mainScreen" class="screen">
-<h2 id="title"></h2>
-<p id="message"></p>
-<button id="yesBtn" onclick="reveal()">Tap Here 😌</button>
-<button id="noBtn" style="background:#aaa;">No 😏</button>
-<div id="photoArea"></div>
-<p id="hiddenMessage" style="margin-top:20px;"></p>
-</div>
-
 <script>
-const content={
-rose:{
-title:"Happy Rose Day 🌹",
-message:"Even with thorns… I never thought of changing the flower.",
-hidden:"Even when you push me away a little… I don’t move."
-},
-propose:{
-title:"Happy Propose Day 💍",
-message:"I don’t want to own you. I want to grow with you.",
-hidden:"No pressure. No drama. Just me choosing you — again.",
-confetti:true
-},
-chocolate:{
-title:"Happy Chocolate Day 🍫",
-message:"Life before you: 70% dark. Life after you: Silk.",
-hidden:"I’d share my chocolate with you. That’s commitment."
-}
+const params = new URLSearchParams(window.location.search);
+const day = params.get("day");
+
+const content = {
+  rose: {
+    title: "Happy Rose Day 🌹",
+    message: "Roses have thorns. We have ego & mood swings. But I never thought of changing the flower.",
+    hidden: "Even when you push me away a little… I don’t move."
+  },
+  propose: {
+    title: "Happy Propose Day 💍",
+    message: "I don’t want to own you. I want to grow with you. One day at a time.",
+    hidden: "No pressure. No drama. Just me choosing you — again.",
+    confetti:true
+  },
+  chocolate: {
+    title: "Happy Chocolate Day 🍫",
+    message: "Life before you: 70% dark. Life after you: Silk.",
+    hidden: "I’d share my chocolate with you. That’s commitment."
+  }
 };
 
-const params=new URLSearchParams(window.location.search);
-const day=params.get("day");
-
-function startExperience(){
-document.getElementById("music").play();
-switchScreen("passwordScreen");
+if(content[day]) {
+  document.getElementById("title").innerText = content[day].title;
+  typeWriter(content[day].message, document.getElementById("message"), 30);
+  document.getElementById("hiddenMessage").innerText = content[day].hidden;
+} else {
+  document.getElementById("title").innerText = "7 Days. 1 Heart ❤️";
+  document.getElementById("message").innerText = "A new chapter unlocks each day.";
+  document.getElementById("actionBtn").style.display="none";
 }
 
-function checkPassword(){
-if(document.getElementById("password").value==="0702"){
-switchScreen("mainScreen");
-loadContent();
-}else{
-alert("Wrong date 😌 Try again.");
-}
+function reveal() {
+  document.getElementById("hiddenMessage").classList.remove("hidden");
+  if(content[day]?.confetti){
+    confettiBurst();
+  }
 }
 
-function switchScreen(id){
-document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-document.getElementById(id).classList.add("active");
+function typeWriter(text, element, speed) {
+  let i = 0;
+  element.innerHTML="";
+  function typing(){
+    if(i < text.length){
+      element.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typing, speed);
+    }
+  }
+  typing();
 }
 
-function loadContent(){
-if(content[day]){
-document.getElementById("title").innerText=content[day].title+" My Queen Sneha ❤️";
-document.getElementById("message").innerText=content[day].message;
-document.getElementById("hiddenMessage").innerText=content[day].hidden;
+function toggleMusic(){
+  const music = document.getElementById("bgMusic");
+  if(music.paused){
+    music.play();
+  } else {
+    music.pause();
+  }
 }
-}
-
-function reveal(){
-document.getElementById("hiddenMessage").style.display="block";
-
-if(content[day]?.confetti){
-for(let i=0;i<60;i++){
-const c=document.createElement("div");
-c.classList.add("confetti");
-c.style.left=Math.random()*100+"vw";
-c.innerHTML="✨";
-document.body.appendChild(c);
-setTimeout(()=>c.remove(),3000);
-}
-}
-
-const photo=document.createElement("img");
-photo.src="herphoto.jpg"; // REPLACE with her image file name
-document.getElementById("photoArea").appendChild(photo);
-}
-
-document.getElementById("noBtn").addEventListener("mouseover",function(){
-this.style.position="absolute";
-this.style.left=Math.random()*70+"%";
-this.style.top=Math.random()*70+"%";
-});
 
 function createHeart(){
-const heart=document.createElement("div");
-heart.classList.add("heart");
-heart.style.left=Math.random()*100+"vw";
-heart.innerHTML="💖";
-document.body.appendChild(heart);
-setTimeout(()=>heart.remove(),8000);
+  const heart = document.createElement("div");
+  heart.classList.add("heart");
+  heart.style.left = Math.random()*100 + "vw";
+  heart.innerHTML = "💖";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),8000);
 }
-setInterval(createHeart,1200);
+setInterval(createHeart,1000);
+
+function confettiBurst(){
+  for(let i=0;i<50;i++){
+    const conf = document.createElement("div");
+    conf.style.position="absolute";
+    conf.style.left=Math.random()*100+"vw";
+    conf.style.top="50%";
+    conf.style.fontSize="20px";
+    conf.innerHTML="✨";
+    document.body.appendChild(conf);
+    setTimeout(()=>conf.remove(),2000);
+  }
+}
 </script>
 
 </body>
