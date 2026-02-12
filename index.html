@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>For My Queen Sneha 👑</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -16,66 +17,47 @@ justify-content:center;
 align-items:center;
 height:100vh;
 overflow:hidden;
-transition:opacity 0.8s ease;
+transition:opacity .6s ease;
 }
 
-.screen{
-position:absolute;
-text-align:center;
-width:90%;
-max-width:550px;
-background:rgba(255,255,255,0.25);
-backdrop-filter:blur(25px);
+.card{
+background:rgba(255,255,255,0.3);
+backdrop-filter:blur(20px);
 padding:40px;
 border-radius:25px;
-box-shadow:0 20px 60px rgba(0,0,0,0.15);
-opacity:0;
-transform:translateY(20px);
-transition:all 0.8s ease;
+width:90%;
+max-width:520px;
+text-align:center;
+box-shadow:0 15px 50px rgba(0,0,0,0.15);
+position:relative;
 }
 
-.active{
-opacity:1;
-transform:translateY(0);
-}
+.hidden{display:none;}
 
 button{
 margin-top:20px;
-padding:12px 30px;
+padding:12px 28px;
 border:none;
 border-radius:30px;
 background:#ff6b81;
 color:white;
-font-size:15px;
 cursor:pointer;
-transition:0.3s;
-position:relative;
+transition:.3s;
+font-size:15px;
 }
 
 button:hover{
-transform:scale(1.07);
-box-shadow:0 0 25px rgba(255,107,129,0.7);
+transform:scale(1.06);
+box-shadow:0 0 20px rgba(255,107,129,0.6);
 }
 
 input{
 padding:10px;
 border-radius:20px;
 border:none;
-margin-top:15px;
 text-align:center;
 font-size:16px;
-}
-
-img{
-width:100%;
-border-radius:20px;
-margin-top:20px;
-animation:fadeIn 1.5s ease;
-}
-
-@keyframes fadeIn{
-from{opacity:0}
-to{opacity:1}
+margin-top:10px;
 }
 
 .heart{
@@ -83,7 +65,7 @@ position:absolute;
 bottom:-20px;
 font-size:18px;
 animation:floatUp 8s linear infinite;
-opacity:0.5;
+opacity:.5;
 }
 
 @keyframes floatUp{
@@ -110,30 +92,13 @@ animation:fall 3s linear forwards;
 <source src="music.mp3">
 </audio>
 
-<div id="intro" class="screen active">
-<h2>For My Queen Sneha 👑</h2>
-<p>7 Days. One Heart.</p>
-<button onclick="startExperience()">Tap to Begin</button>
-</div>
-
-<div id="passwordScreen" class="screen">
-<h3>Enter Our Anniversary Date</h3>
-<p>Hint: 7th Feb (DDMM)</p>
-<input id="password" placeholder="0702">
-<br>
-<button onclick="checkPassword()">Unlock ❤️</button>
-</div>
-
-<div id="mainScreen" class="screen">
-<h2 id="title"></h2>
-<p id="message"></p>
-<button id="yesBtn" onclick="reveal()">Tap Here 😌</button>
-<button id="noBtn" style="background:#aaa;">No 😏</button>
-<div id="photoArea"></div>
-<p id="hiddenMessage" style="margin-top:20px;"></p>
-</div>
+<div class="card" id="app"></div>
 
 <script>
+const app=document.getElementById("app");
+const params=new URLSearchParams(window.location.search);
+const day=params.get("day");
+
 const content={
 rose:{
 title:"Happy Rose Day 🌹",
@@ -153,43 +118,87 @@ hidden:"I’d share my chocolate with you. That’s commitment."
 }
 };
 
-const params=new URLSearchParams(window.location.search);
-const day=params.get("day");
+function floatingHearts(){
+const heart=document.createElement("div");
+heart.className="heart";
+heart.style.left=Math.random()*100+"vw";
+heart.innerHTML="💖";
+document.body.appendChild(heart);
+setTimeout(()=>heart.remove(),8000);
+}
+setInterval(floatingHearts,1200);
 
-function startExperience(){
+function showIntro(){
+app.innerHTML=`
+<h2>For My Queen Sneha 👑</h2>
+<p style="margin-top:10px;">7 Days. One Heart. One Story.</p>
+<p style="margin-top:20px;font-weight:300;">
+This isn’t just a website.<br>
+It’s something I built… for you.
+</p>
+<button onclick="start()">Tap To Begin ❤️</button>
+`;
+}
+
+function start(){
 document.getElementById("music").play();
-switchScreen("passwordScreen");
+showPassword();
 }
 
-function checkPassword(){
-if(document.getElementById("password").value==="0702"){
-switchScreen("mainScreen");
-loadContent();
+function showPassword(){
+app.innerHTML=`
+<h3>Enter Our Anniversary Date</h3>
+<p>7th Feb (DDMM)</p>
+<input id="pass" placeholder="0702">
+<br>
+<button onclick="unlock()">Unlock ❤️</button>
+`;
+}
+
+function unlock(){
+if(document.getElementById("pass").value==="0702"){
+if(!day){
+showFinal();
 }else{
-alert("Wrong date 😌 Try again.");
+showDay();
+}
+}else{
+alert("Wrong date 😌");
 }
 }
 
-function switchScreen(id){
-document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-document.getElementById(id).classList.add("active");
+function showDay(){
+const data=content[day];
+if(!data){
+showFinal();
+return;
 }
+app.innerHTML=`
+<h2>${data.title}</h2>
+<p style="margin-top:10px;">${data.message}</p>
+<button onclick="reveal()">Tap Here 😌</button>
+${day==="propose" ? '<button id="noBtn" style="background:#aaa;">No 😏</button>' : ''}
+<p id="hidden" class="hidden" style="margin-top:20px;">${data.hidden}</p>
+<div id="photoArea"></div>
+`;
 
-function loadContent(){
-if(content[day]){
-document.getElementById("title").innerText=content[day].title+" My Queen Sneha ❤️";
-document.getElementById("message").innerText=content[day].message;
-document.getElementById("hiddenMessage").innerText=content[day].hidden;
+if(day==="propose"){
+const noBtn=document.getElementById("noBtn");
+noBtn.addEventListener("mouseover",()=>{
+noBtn.style.position="absolute";
+noBtn.style.left=Math.random()*60+"%";
+noBtn.style.top=Math.random()*60+"%";
+});
 }
 }
 
 function reveal(){
-document.getElementById("hiddenMessage").style.display="block";
+document.getElementById("hidden").classList.remove("hidden");
 
 if(content[day]?.confetti){
 for(let i=0;i<60;i++){
 const c=document.createElement("div");
-c.classList.add("confetti");
+c.className="confetti";
 c.style.left=Math.random()*100+"vw";
 c.innerHTML="✨";
 document.body.appendChild(c);
@@ -197,26 +206,25 @@ setTimeout(()=>c.remove(),3000);
 }
 }
 
-const photo=document.createElement("img");
-photo.src="herphoto.jpg"; // REPLACE with her image file name
-document.getElementById("photoArea").appendChild(photo);
+const img=document.createElement("img");
+img.src="herphoto.jpg";
+img.style.width="100%";
+img.style.borderRadius="20px";
+img.style.marginTop="20px";
+document.getElementById("photoArea").appendChild(img);
 }
 
-document.getElementById("noBtn").addEventListener("mouseover",function(){
-this.style.position="absolute";
-this.style.left=Math.random()*70+"%";
-this.style.top=Math.random()*70+"%";
-});
-
-function createHeart(){
-const heart=document.createElement("div");
-heart.classList.add("heart");
-heart.style.left=Math.random()*100+"vw";
-heart.innerHTML="💖";
-document.body.appendChild(heart);
-setTimeout(()=>heart.remove(),8000);
+function showFinal(){
+app.innerHTML=`
+<h2>Happy Valentine’s Week ❤️</h2>
+<p style="margin-top:10px;">
+Every day with you feels like a new chapter.
+And I still choose you.
+</p>
+`;
 }
-setInterval(createHeart,1200);
+
+showIntro();
 </script>
 
 </body>
